@@ -2,7 +2,7 @@
   "name": "Amit's Personal Assistant",
   "short_name": "Amit PA",
   "description": "Your personal daily assistant for mortgage, health and life tasks",
-  "start_url": "/",
+"start_url": "/amit-pa/index.html",
   "display": "standalone",
   "background_color": "#0b0c10",
   "theme_color": "#d4a843",
