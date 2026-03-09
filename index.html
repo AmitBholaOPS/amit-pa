@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Amit's PA</title>
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Amit PA">
+<meta name="theme-color" content="#111318">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e0f14;--s1:#161820;--s2:#1e2029;--s3:#272a38;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.12);
+  --green:#4ade80;--blue:#60a5fa;--red:#f87171;--purple:#a78bfa;
+  --text:#eeeef2;--t2:#8b90aa;--t3:#4a4f66;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --mortgage:#c9a84c;--health:#4ade80;--life:#60a5fa;
+  --r:18px;--font-body:'Epilogue',sans-serif;--font-display:'Fraunces',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;
+  display:flex;flex-direction:column;
+  background-image:radial-gradient(ellipse at 10% 0%,rgba(201,168,76,0.07) 0%,transparent 55%),radial-gradient(ellipse at 90% 95%,rgba(96,165,250,0.05) 0%,transparent 55%);
+}
+.header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--border);background:rgba(14,15,20,0.95);backdrop-filter:blur(20px);padding-top:max(16px,env(safe-area-inset-top));}
+.header-left .eyebrow{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.header-left h1{font-family:var(--font-display);font-size:22px;font-weight:500;line-height:1;}
+.date-pill{background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);color:var(--gold2);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.content{padding:16px 16px 100px;}
+.panel{display:none;}
+.panel.active{display:block;animation:fadeUp 0.25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.hero{background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(201,168,76,0.04));border:1px solid rgba(201,168,76,0.22);border-radius:var(--r);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.18),transparent 70%);}
+.hero-label{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.hero-title{font-family:var(--font-display);font-size:24px;font-weight:500;line-height:1.3;margin-bottom:8px;}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.hero-meta span{font-size:13px;color:var(--t2);}
+.hero-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:#0e0f14;border:none;padding:11px 22px;border-radius:12px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-primary:hover{background:var(--gold2);}
+.btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--border2);padding:11px 16px;border-radius:12px;font-family:var(--font-body);font-size:14px;cursor:pointer;transition:all 0.2s;}
+.btn-ghost:hover{color:var(--text);}
+.intel-strip{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;}
+.intel-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;}
+.intel-items{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.intel-items::-webkit-scrollbar{display:none;}
+.intel-item{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;flex-shrink:0;min-width:130px;}
+.intel-item-label{font-size:10px;color:var(--t3);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;}
+.intel-item-value{font-size:16px;font-weight:600;color:var(--text);font-family:var(--font-display);}
+.intel-item-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.intel-item.up .intel-item-value{color:var(--green);}
+.intel-item.warn .intel-item-value{color:var(--gold2);}
+.intel-item.down .intel-item-value{color:var(--red);}
+.area-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.area-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.area-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
+.area-card.mortgage::before{background:var(--mortgage);}
+.area-card.health::before{background:var(--health);}
+.area-card.life::before{background:var(--life);}
+.area-card:hover{border-color:var(--border2);transform:translateY(-1px);}
+.area-icon{font-size:20px;margin-bottom:6px;}
+.area-name{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.area-card.mortgage .area-name{color:var(--mortgage);}
+.area-card.health .area-name{color:var(--health);}
+.area-card.life .area-name{color:var(--life);}
+.area-stat{font-size:13px;color:var(--t2);}
+.area-bar{margin-top:8px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.area-bar-fill{height:100%;border-radius:2px;transition:width 0.5s ease;}
+.mortgage .area-bar-fill{background:var(--mortgage);}
+.health .area-bar-fill{background:var(--health);}
+.life .area-bar-fill{background:var(--life);}
+.sh{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px;}
+.sh-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.btn-add{background:var(--s2);color:var(--t2);border:1px solid var(--border2);padding:6px 14px;border-radius:10px;font-family:var(--font-body);font-size:13px;cursor:pointer;transition:all 0.2s;}
+.btn-add:hover{color:var(--text);border-color:var(--gold);}
+.overdue-bar{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t2);}
+.overdue-bar strong{color:var(--red);}
+.task{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:10px;display:flex;gap:13px;align-items:flex-start;transition:all 0.2s;}
+.task:hover{border-color:var(--border2);}
+.task.done{opacity:0.38;}
+.task.overdue{border-color:rgba(248,113,113,0.22);}
+.task.hi{border-left:3px solid var(--red);}
+.task.med{border-left:3px solid var(--gold);}
+.task.lo{border-left:3px solid var(--t3);}
+.chk{width:26px;height:26px;min-width:26px;border-radius:50%;border:2px solid var(--t3);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:1px;font-size:13px;}
+.chk:hover{border-color:var(--gold);}
+.chk.done{background:var(--green);border-color:var(--green);color:#0e0f14;font-weight:700;}
+.task-body{flex:1;min-width:0;}
+.task-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px;}
+.tag{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:6px;}
+.tag-mortgage{background:rgba(201,168,76,0.12);color:var(--mortgage);}
+.tag-health{background:rgba(74,222,128,0.1);color:var(--health);}
+.tag-life{background:rgba(96,165,250,0.1);color:var(--life);}
+.tag-overdue{background:rgba(248,113,113,0.1);color:var(--red);}
+.tag-time{background:var(--s2);color:var(--t2);}
+.task-name{font-size:16px;font-weight:500;line-height:1.4;margin-bottom:4px;}
+.task.done .task-name{text-decoration:line-through;color:var(--t3);}
+.task-hint{font-size:13px;color:var(--t2);line-height:1.5;}
+.script-btn{background:none;border:none;color:var(--gold);font-size:12px;font-family:var(--font-body);cursor:pointer;padding:5px 0;display:block;margin-top:4px;}
+.script-box{background:rgba(201,168,76,0.07);border-left:2px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 12px;font-size:13px;color:var(--gold2);font-style:italic;line-height:1.6;margin-top:8px;display:none;}
+.script-box.show{display:block;}
+.task-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:15px;padding:4px;transition:color 0.2s;flex-shrink:0;}
+.task-del:hover{color:var(--red);}
+.streak-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+.streak-num{font-family:var(--font-display);font-size:44px;font-weight:500;color:var(--gold);line-height:1;}
+.streak-info strong{font-size:16px;display:block;margin-bottom:3px;}
+.streak-info span{font-size:13px;color:var(--t2);}
+.journal-compose{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:18px;margin-bottom:16px;}
+.journal-compose h3{font-size:15px;font-weight:500;margin-bottom:12px;color:var(--t2);}
+.journal-compose textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:13px;color:var(--text);font-family:var(--font-display);font-size:17px;font-style:italic;line-height:1.7;outline:none;resize:none;min-height:90px;transition:border-color 0.2s;}
+.journal-compose textarea:focus{border-color:var(--gold);}
+.journal-compose textarea::placeholder{color:var(--t3);}
+.journal-entry{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;}
+.je-date{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+.je-text{font-family:var(--font-display);font-size:17px;color:var(--t2);line-height:1.7;font-style:italic;}
+.chat-outer{display:flex;flex-direction:column;height:calc(100vh - 210px);}
+.chat-msgs{flex:1;overflow-y:auto;padding:4px 0 10px;scrollbar-width:none;}
+.chat-msgs::-webkit-scrollbar{display:none;}
+.msg{margin-bottom:14px;animation:fadeUp 0.2s ease;}
+.msg-ai .bubble{background:var(--s2);border:1px solid var(--border);border-radius:4px 18px 18px 18px;padding:14px 16px;max-width:88%;font-size:15px;line-height:1.65;color:var(--text);}
+.msg-user{display:flex;justify-content:flex-end;}
+.msg-user .bubble{background:linear-gradient(135deg,rgba(201,168,76,0.18),rgba(201,168,76,0.08));border:1px solid rgba(201,168,76,0.2);border-radius:18px 4px 18px 18px;padding:13px 16px;max-width:85%;font-size:15px;line-height:1.6;color:var(--text);}
+.msg-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:5px;padding-left:2px;}
+.typing{display:flex;gap:5px;align-items:center;padding:14px 16px;}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--t3);animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:0.2s;}
+.typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,80%,100%{opacity:0.2;}40%{opacity:1;}}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:12px 0 0;border-top:1px solid var(--border);margin-top:8px;}
+.chat-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:14px;padding:12px 15px;color:var(--text);font-family:var(--font-body);font-size:15px;outline:none;resize:none;max-height:100px;min-height:44px;line-height:1.5;transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--gold);}
+.chat-input::placeholder{color:var(--t3);}
+.chat-send{width:44px;height:44px;background:var(--gold);color:#0e0f14;border:none;border-radius:12px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.chat-send:hover{background:var(--gold2);}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed;}
+.quick-prompts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.qp{background:var(--s2);border:1px solid var(--border2);color:var(--t2);padding:7px 13px;border-radius:20px;font-size:13px;cursor:pointer;transition:all 0.2s;font-family:var(--font-body);}
+.qp:hover{border-color:var(--gold);color:var(--text);}
+.overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);display:flex;align-items:flex-end;padding:0;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--s1);border:1px solid var(--border2);border-radius:24px 24px 0 0;padding:24px 20px;width:100%;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.3s ease;padding-bottom:max(32px,env(safe-area-inset-bottom));}
+.overlay.show .modal{transform:translateY(0);}
+.modal h3{font-family:var(--font-display);font-size:22px;margin-bottom:20px;}
+.fg{margin-bottom:15px;}
+.fl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;display:block;}
+.fi,.fs,.fta{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:15px;outline:none;transition:border-color 0.2s;}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--gold);}
+.fs option{background:var(--s2);}
+.fta{resize:vertical;min-height:70px;}
+.modal-btns{display:flex;gap:10px;margin-top:18px;}
+.btn-cancel{background:var(--s2);color:var(--t2);border:1px solid var(--border2);padding:12px 20px;border-radius:12px;font-family:var(--font-body);font-size:15px;cursor:pointer;}
+.empty{text-align:center;padding:36px 20px;color:var(--t3);}
+.empty div{font-size:36px;margin-bottom:12px;}
+.empty p{font-size:15px;line-height:1.6;}
+.bottom-nav{flex-shrink:0;display:flex;border-top:1px solid var(--border);background:rgba(14,15,20,0.97);backdrop-filter:blur(20px);padding-bottom:max(8px,env(safe-area-inset-bottom));}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 6px;gap:4px;border:none;background:none;color:var(--t3);cursor:pointer;transition:color 0.2s;font-family:var(--font-body);}
+.bn.active{color:var(--gold);}
+.bn-icon{font-size:22px;}
+.bn-label{font-size:10px;letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <div class="eyebrow">Personal Assistant</div>
+    <h1>Hey Amit 👋</h1>
+  </div>
+  <div class="date-pill" id="datePill">—</div>
+</div>
+<div class="scroll" id="mainScroll">
+  <div class="content">
+    <div class="panel active" id="panel-dash">
+      <div id="overdueBanner"></div>
+      <div id="heroCard"></div>
+      <div class="intel-strip">
+        <div class="intel-label">📡 Ontario Mortgage Market · 2026</div>
+        <div class="intel-items">
+          <div class="intel-item warn"><div class="intel-item-label">BoC Rate</div><div class="intel-item-value">2.25%</div><div class="intel-item-sub">Hold — Jan 2026</div></div>
+          <div class="intel-item warn"><div class="intel-item-label">5yr Fixed</div><div class="intel-item-value">~4.2%</div><div class="intel-item-sub">Stable in 2026</div></div>
+          <div class="intel-item up"><div class="intel-item-label">Opportunity</div><div class="intel-item-value">High</div><div class="intel-item-sub">60% renewing now</div></div>
+          <div class="intel-item down"><div class="intel-item-label">GTA Avg Price</div><div class="intel-item-value">$973K</div><div class="intel-item-sub">Below $1M first time</div></div>
+          <div class="intel-item up"><div class="intel-item-label">Spring 2026</div><div class="intel-item-value">Pickup</div><div class="intel-item-sub">Sales rising in ON</div></div>
+          <div class="intel-item warn"><div class="intel-item-label">Prime Rate</div><div class="intel-item-value">4.45%</div><div class="intel-item-sub">Unchanged</div></div>
+        </div>
+      </div>
+      <div class="area-row" id="areaRow"></div>
+      <div class="sh"><div class="sh-title">All Tasks · AI Prioritized</div></div>
+      <div id="allTasks"></div>
+    </div>
+    <div class="panel" id="panel-mortgage">
+      <div class="sh"><div class="sh-title">🏡 Mortgage Business</div><button class="btn-add" onclick="openModal('mortgage')">+ Add</button></div>
+      <div id="mortgageTasks"></div>
+    </div>
+    <div class="panel" id="panel-health">
+      <div class="sh"><div class="sh-title">💪 Health &amp; Stretching</div><button class="btn-add" onclick="openModal('health')">+ Add</button></div>
+      <div id="healthTasks"></div>
+    </div>
+    <div class="panel" id="panel-life">
+      <div class="sh"><div class="sh-title">📋 Life &amp; Admin</div><button class="btn-add" onclick="openModal('life')">+ Add</button></div>
+      <div id="lifeTasks"></div>
+    </div>
+    <div class="panel" id="panel-ai">
+      <div class="chat-outer">
+        <div class="quick-prompts">
+          <button class="qp" onclick="sendQuick('What should I do next right now?')">⚡ What next?</button>
+          <button class="qp" onclick="sendQuick('I feel like procrastinating and freezing — coach me')">🧠 Coach me</button>
+          <button class="qp" onclick="sendQuick('What is happening in the Ontario mortgage market right now that I should know about as an agent?')">📊 Market update</button>
+          <button class="qp" onclick="sendQuick('Suggest 3 new mortgage lead tasks for this week based on the current market')">🏡 Suggest tasks</button>
+          <button class="qp" onclick="sendQuick('I only have 5 minutes right now, what is the single best thing I can do?')">⏱ 5 mins only</button>
+          <button class="qp" onclick="sendQuick('Review my progress honestly and tell me what patterns you see')">📈 My progress</button>
+        </div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chatInput" placeholder="Ask your AI coach anything..." rows="1" onkeydown="handleKey(event)"></textarea>
+          <button class="chat-send" id="sendBtn" onclick="sendMsg()">↑</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="panel-journal">
+      <div class="streak-card">
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="streak-info"><strong>Day Streak</strong><span>Keep showing up — that's the whole game</span></div>
+      </div>
+      <div class="journal-compose">
+        <h3>📓 How did today go?</h3>
+        <textarea id="journalInput" placeholder="Just speak your mind... What did you do? What's weighing on you? What went well?"></textarea>
+        <div style="margin-top:12px;"><button class="btn-primary" onclick="saveJournal()">Save Entry</button></div>
+      </div>
+      <div class="sh"><div class="sh-title">Past Entries</div></div>
+      <div id="journalList"></div>
+    </div>
+  </div>
+</div>
+<div class="bottom-nav">
+  <button class="bn active" onclick="switchTab('dash')" id="bn-dash"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></button>
+  <button class="bn" onclick="switchTab('mortgage')" id="bn-mortgage"><span class="bn-icon">🏡</span><span class="bn-label">Mortgage</span></button>
+  <button class="bn" onclick="switchTab('ai')" id="bn-ai"><span class="bn-icon">🤖</span><span class="bn-label">AI Coach</span></button>
+  <button class="bn" onclick="switchTab('journal')" id="bn-journal"><span class="bn-icon">📓</span><span class="bn-label">Journal</span></button>
+</div>
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>Add New Task</h3>
+    <div class="fg"><label class="fl">Task Name</label><input class="fi" id="nt-name" placeholder="What needs to be done?"></div>
+    <div class="fg"><label class="fl">Area</label><select class="fs" id="nt-area"><option value="mortgage">🏡 Mortgage</option><option value="health">💪 Health</option><option value="life">📋 Life</option></select></div>
+    <div class="fg"><label class="fl">Time Needed</label><select class="fs" id="nt-time"><option value="5 mins">5 mins</option><option value="10 mins">10 mins</option><option value="15 mins">15 mins</option><option value="20 mins">20 mins</option><option value="45 mins">45 mins</option></select></div>
+    <div class="fg"><label class="fl">Priority</label><select class="fs" id="nt-priority"><option value="high">🔴 High</option><option value="medium">🟡 Medium</option><option value="low">⚪ Low</option></select></div>
+    <div class="fg"><label class="fl">Script / Note (optional)</label><textarea class="fta" id="nt-note" placeholder="Message script or reminder..."></textarea></div>
+    <div class="modal-btns"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-primary" style="flex:1" onclick="addTask()">Add Task</button></div>
+  </div>
+</div>
+<script>
+const KEY='amit_pa_v6';
+function today(){return new Date().toISOString().split('T')[0];}
+function daysAgo(n){const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
+const SEED=[
+  {id:'m1',area:'mortgage',name:'Send one warm outreach message',hint:'Pick one person from your contacts who owns or may buy a home. 5 minutes.',script:'Script: "Hey [name], hope you\'re well! I recently got my mortgage agent licence — if you or anyone you know ever wants to chat about mortgages, rates or renewals, I\'m happy to help. No pressure at all!"',time:'5 mins',priority:'high',done:false,created:daysAgo(0),rolled:false},
+  {id:'m2',area:'mortgage',name:'Follow up with your 2 stalled leads',hint:'Open CRM, write one follow-up to each lead, send before closing the app.',script:'Script: "Hi [name], just checking in — still thinking about [buying/renewing]? Happy to answer any questions, no commitment needed."',time:'15 mins',priority:'high',done:false,created:daysAgo(2),rolled:true},
+  {id:'m3',area:'mortgage',name:'Build your warm contact list of 20 people',hint:'Go through your phone. Write down 20 people who own or may want to buy. This is your pipeline.',script:null,time:'15 mins',priority:'high',done:false,created:daysAgo(1),rolled:true},
+  {id:'m4',area:'mortgage',name:'Update LinkedIn headline to include Mortgage Agent',hint:'Add "Licensed Mortgage Agent | Ontario" — takes 2 minutes.',script:null,time:'5 mins',priority:'medium',done:false,created:daysAgo(0),rolled:false},
+  {id:'m5',area:'mortgage',name:'Post one mortgage tip on LinkedIn or WhatsApp',hint:'One sentence about rates or renewals. Post it in under 20 mins. No perfecting.',script:'Post idea: "Did you know ~60% of Canadian mortgages are up for renewal in 2025-26? Now is a great time to review your options. DM me for a free chat."',time:'20 mins',priority:'medium',done:false,created:daysAgo(0),rolled:false},
+  {id:'h1',area:'health',name:'Morning stretch routine (5 mins)',hint:'Knee-to-chest, neck rolls, shoulder rolls, torso twist, calf raises. Right after waking.',script:null,time:'5 mins',priority:'high',done:false,created:daysAgo(0),rolled:false},
+  {id:'h2',area:'health',name:'Evening stretch routine (5 mins)',hint:'Figure-4 hip, chest opener, hamstring stretch, child\'s pose, deep breathing.',script:null,time:'5 mins',priority:'high',done:false,created:daysAgo(0),rolled:false},
+  {id:'h3',area:'health',name:'Stand up every 90 minutes during the day',hint:'Arms overhead for 10 seconds. Set a 90-min phone alarm right now.',script:null,time:'1 min',priority:'medium',done:false,created:daysAgo(0),rolled:false},
+  {id:'l1',area:'life',name:'10-min Sunday week plan',hint:'Write 3 tasks: one mortgage, one health, one life. That is your week.',script:null,time:'10 mins',priority:'high',done:false,created:daysAgo(3),rolled:true},
+  {id:'l2',area:'life',name:'Reply to messages older than 2 days',hint:'Check WhatsApp and email. Clear anything waiting more than 48 hours.',script:null,time:'10 mins',priority:'medium',done:false,created:daysAgo(0),rolled:false},
+];
+function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return{tasks:[...SEED],journal:[],streak:0,lastActive:null,doneToday:0,chatHistory:[]};}
+function save(d){try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
+let D=load();
+function checkRollover(){
+  const t=today();
+  if(D.lastActive&&D.lastActive!==t){
+    D.tasks.forEach(tk=>{if(!tk.done&&tk.created<t)tk.rolled=true;});
+    const wasYest=(new Date(t)-new Date(D.lastActive))===86400000;
+    if(wasYest&&D.doneToday>0)D.streak=(D.streak||0)+1;
+    else if(!wasYest)D.streak=0;
+    D.doneToday=0;
+  }
+  D.lastActive=t;save(D);
+}
+function prioritized(){
+  return[...D.tasks].filter(t=>!t.done).sort((a,b)=>{
+    const s=t=>{let x=0;if(t.rolled)x+=120;if(t.priority==='high')x+=60;if(t.priority==='medium')x+=30;if(t.area==='mortgage')x+=15;if(t.area==='health')x+=8;x+=Math.floor((new Date(today())-new Date(t.created))/86400000)*5;return x;};
+    return s(b)-s(a);
+  });
+}
+const AL={mortgage:'🏡 Mortgage',health:'💪 Health',life:'📋 Life'};
+const PC={high:'hi',medium:'med',low:'lo'};
+function taskEl(t){
+  const div=document.createElement('div');
+  div.className='task '+(PC[t.priority]||'lo')+(t.done?' done':'')+(t.rolled&&!t.done?' overdue':'');
+  div.id='tk-'+t.id;
+  const chk=document.createElement('button');
+  chk.className='chk'+(t.done?' done':'');
+  if(t.done)chk.textContent='✓';
+  chk.onclick=()=>toggleTask(t.id);
+  const body=document.createElement('div');body.className='task-body';
+  const tags=document.createElement('div');tags.className='task-tags';
+  const at=document.createElement('span');at.className='tag tag-'+t.area;at.textContent=AL[t.area];
+  const tt=document.createElement('span');tt.className='tag tag-time';tt.textContent='⏱ '+t.time;
+  tags.appendChild(at);tags.appendChild(tt);
+  if(t.rolled&&!t.done){const ot=document.createElement('span');ot.className='tag tag-overdue';ot.textContent='⚠ Overdue';tags.appendChild(ot);}
+  const nm=document.createElement('div');nm.className='task-name';nm.textContent=t.name;
+  body.appendChild(tags);body.appendChild(nm);
+  if(t.hint){const h=document.createElement('div');h.className='task-hint';h.textContent=t.hint;body.appendChild(h);}
+  if(t.script){
+    const sb=document.createElement('button');sb.className='script-btn';sb.textContent='▸ Show script';
+    const sd=document.createElement('div');sd.className='script-box';sd.textContent=t.script;
+    sb.onclick=()=>{sd.classList.toggle('show');sb.textContent=sd.classList.contains('show')?'▾ Hide script':'▸ Show script';};
+    body.appendChild(sb);body.appendChild(sd);
+  }
+  const del=document.createElement('button');del.className='task-del';del.textContent='✕';del.onclick=()=>deleteTask(t.id);
+  div.appendChild(chk);div.appendChild(body);div.appendChild(del);
+  return div;
+}
+function render(){
+  checkRollover();
+  document.getElementById('datePill').textContent=new Date().toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'});
+  const od=D.tasks.filter(t=>!t.done&&t.rolled);
+  document.getElementById('overdueBanner').innerHTML=od.length?`<div class="overdue-bar">⚠️ <span><strong>${od.length} overdue task${od.length>1?'s':''}</strong> — these are at the top of your list</span></div>`:'';
+  const pr=prioritized();
+  const hero=document.getElementById('heroCard');
+  if(!pr.length){hero.innerHTML='<div class="hero"><div class="hero-label">All caught up!</div><div class="hero-title">No active tasks 🎉</div><p style="color:var(--t2);font-size:15px;margin-top:6px;">Add new ones or ask your AI Coach for suggestions.</p></div>';}
+  else{
+    const top=pr[0];
+    hero.innerHTML=`<div class="hero"><div class="hero-label">⚡ Do This Next</div><div class="hero-title">${top.name}</div><div class="hero-meta"><span>${AL[top.area]}</span><span>⏱ ${top.time}</span>${top.rolled?'<span style="color:var(--red)">⚠ Overdue</span>':''}</div>${top.hint?`<div style="font-size:14px;color:var(--t2);margin-bottom:14px;">${top.hint}</div>`:''}<div class="hero-btns"><button class="btn-primary" onclick="toggleTask('${top.id}')">✓ Done</button><button class="btn-ghost" onclick="skipTask('${top.id}')">Skip</button><button class="btn-ghost" onclick="switchTab('ai')">Ask AI 🤖</button></div></div>`;
+  }
+  const ar=document.getElementById('areaRow');ar.innerHTML='';
+  ['mortgage','health','life'].forEach(area=>{
+    const all=D.tasks.filter(t=>t.area===area);
+    const done=all.filter(t=>t.done).length;const total=all.length;
+    const pct=total?Math.round(done/total*100):0;
+    const icons={mortgage:'🏡',health:'💪',life:'📋'};
+    const labels={mortgage:'Mortgage',health:'Health',life:'Life'};
+    const c=document.createElement('div');c.className='area-card '+area;c.onclick=()=>switchTab(area);
+    c.innerHTML=`<div class="area-icon">${icons[area]}</div><div class="area-name">${labels[area]}</div><div class="area-stat">${done}/${total}</div><div class="area-bar"><div class="area-bar-fill" style="width:${pct}%"></div></div>`;
+    ar.appendChild(c);
+  });
+  const at=document.getElementById('allTasks');at.innerHTML='';
+  if(!pr.length)at.innerHTML='<div class="empty"><div>✅</div><p>All done! Ask AI Coach for what to add next.</p></div>';
+  else pr.forEach(t=>at.appendChild(taskEl(t)));
+  const done=D.tasks.filter(t=>t.done);
+  if(done.length){const sep=document.createElement('div');sep.className='sh';sep.style.marginTop='20px';sep.innerHTML=`<div class="sh-title">Completed (${done.length})</div>`;at.appendChild(sep);done.forEach(t=>at.appendChild(taskEl(t)));}
+  renderArea('mortgage','mortgageTasks');renderArea('health','healthTasks');renderArea('life','lifeTasks');
+  document.getElementById('streakNum').textContent=D.streak||0;
+  const jl=document.getElementById('journalList');jl.innerHTML='';
+  if(!D.journal||!D.journal.length)jl.innerHTML='<div class="empty"><div>📓</div><p>No entries yet.</p></div>';
+  else[...D.journal].reverse().forEach(e=>{jl.innerHTML+=`<div class="journal-entry"><div class="je-date">${e.date} · ${e.time}</div><div class="je-text">${e.text}</div></div>`;});
+}
+function renderArea(area,id){
+  const el=document.getElementById(id);el.innerHTML='';
+  const tasks=D.tasks.filter(t=>t.area===area);
+  if(!tasks.length){el.innerHTML='<div class="empty"><div>📭</div><p>No tasks yet.</p></div>';return;}
+  const active=tasks.filter(t=>!t.done).sort((a,b)=>{const p={high:3,medium:2,low:1};return(p[b.priority]||0)-(p[a.priority]||0);});
+  const done=tasks.filter(t=>t.done);
+  active.forEach(t=>el.appendChild(taskEl(t)));
+  if(done.length){const sep=document.createElement('div');sep.className='sh';sep.style.marginTop='16px';sep.innerHTML=`<div class="sh-title">Completed (${done.length})</div>`;el.appendChild(sep);done.forEach(t=>el.appendChild(taskEl(t)));}
+}
+function toggleTask(id){
+  const t=D.tasks.find(x=>x.id===id);if(!t)return;
+  t.done=!t.done;t.completedAt=t.done?new Date().toISOString():null;
+  if(t.done)D.doneToday=(D.doneToday||0)+1;else D.doneToday=Math.max(0,(D.doneToday||1)-1);
+  save(D);render();
+}
+function skipTask(id){const i=D.tasks.findIndex(x=>x.id===id);if(i<0)return;const[t]=D.tasks.splice(i,1);D.tasks.push(t);save(D);render();}
+function deleteTask(id){D.tasks=D.tasks.filter(x=>x.id!==id);save(D);render();}
+let modalArea='mortgage';
+function openModal(area){
+  modalArea=area||'mortgage';
+  document.getElementById('nt-area').value=modalArea;
+  document.getElementById('nt-name').value='';
+  document.getElementById('nt-note').value='';
+  document.getElementById('nt-time').value='15 mins';
+  document.getElementById('nt-priority').value='medium';
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(()=>document.getElementById('nt-name').focus(),200);
+}
+function closeModal(){document.getElementById('overlay').classList.remove('show');}
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===document.getElementById('overlay'))closeModal();});
+function addTask(){
+  const name=document.getElementById('nt-name').value.trim();if(!name)return;
+  D.tasks.push({id:'t'+Date.now(),area:document.getElementById('nt-area').value,name,hint:'',script:document.getElementById('nt-note').value.trim()||null,time:document.getElementById('nt-time').value,priority:document.getElementById('nt-priority').value,done:false,created:today(),completedAt:null,rolled:false});
+  save(D);closeModal();render();
+}
+function saveJournal(){
+  const text=document.getElementById('journalInput').value.trim();if(!text)return;
+  if(!D.journal)D.journal=[];
+  D.journal.push({date:today(),time:new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'}),text});
+  document.getElementById('journalInput').value='';
+  save(D);render();
+}
+let activeTab='dash';
+function switchTab(name){
+  activeTab=name;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('panel-'+name);if(panel)panel.classList.add('active');
+  const bn=document.getElementById('bn-'+name);if(bn)bn.classList.add('active');
+  document.getElementById('mainScroll').scrollTop=0;
+  if(name==='ai'&&!D.chatHistory.length)initChat();
+}
+function buildSystem(){
+  const active=D.tasks.filter(t=>!t.done);
+  const overdue=active.filter(t=>t.rolled);
+  const done=D.tasks.filter(t=>t.done);
+  const journals=D.journal?D.journal.slice(-5):[];
+  return `You are Amit's personal AI assistant and life coach. You know everything about him:
+
+PROFILE:
+- Amit Bhola, Toronto, Ontario, Canada
+- Full-time finance professional, 16 years experience, job stable and going well
+- Side hustle: Licensed Mortgage Agent Level 2, Ontario (FSRA/MBLAA licensed)
+- Core struggles: procrastination (freezes and does nothing), perfectionism, no accountability
+- Available time for mortgage: less than 5 hrs/week
+- Best work times: lunch breaks and evenings 7-10pm, Mon-Fri
+- Health: sedentary, overweight, doing 5-min morning + evening stretches
+- Personality: responds to warm but direct coaching, needs encouragement + honesty
+
+CURRENT TASKS:
+- Active: ${active.length} tasks (${overdue.length} overdue)
+- Completed: ${done.length} tasks
+- Overdue: ${overdue.map(t=>t.name).join('; ')||'none'}
+- Top priority right now: ${active[0]?.name||'none'}
+- Streak: ${D.streak||0} days
+
+ONTARIO MORTGAGE MARKET (March 2026 - REAL DATA):
+- Bank of Canada rate: 2.25% (held Jan 28, 2026 - no cuts expected in 2026)
+- Prime rate: 4.45% unchanged
+- 5-year fixed rates: ~4.2%, stable, slight upward pressure possible
+- Variable rates: stable, tied to BoC
+- GTA average home price: $973,289 (first drop below $1M in 5 years)
+- GTA condo average: $604,759
+- Ontario inventory up 38.8% year over year = more listings = buyers have choice = need agent guidance
+- ~60% of ALL Canadian mortgages renewing 2025-2026 = MASSIVE opportunity for agents
+- Spring 2026 expected to be more active than 2025 (CMHC forecast)
+- First-time buyers struggling with stress test but extended amortizations now available
+- Many buyers hesitant due to economic uncertainty = they need trusted advisors like Amit
+- US tariff uncertainty affecting economic outlook = BoC cautious
+
+RECENT JOURNAL:
+${journals.map(j=>`[${j.date}]: ${j.text}`).join('\n')||'No journal entries yet'}
+
+YOUR COACHING RULES:
+- Keep responses SHORT and mobile-friendly — max 150 words unless asked for more
+- When he's frozen/procrastinating: give him ONE action only, make it tiny
+- Use current market data to suggest timely mortgage tasks
+- Be warm, direct, honest — never preachy or long-winded
+- Celebrate every small win genuinely
+- If he asks what to do: one thing, one reason, done
+- Today: ${new Date().toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}`;
+}
+function initChat(){
+  if(!D.chatHistory)D.chatHistory=[];
+  addAiMsg("Hey Amit! I'm your AI coach. I know your tasks, your mortgage goals, the Ontario market — and I know you tend to freeze when overwhelmed.\n\nSo let's keep this simple. Ask me anything: what to do next, how to find leads, how to stop procrastinating, or just talk. What's on your mind?");
+}
+function addAiMsg(text){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');div.className='msg msg-ai';
+  div.innerHTML='<div class="msg-label">Amit PA</div><div class="bubble">'+text.replace(/\n/g,'<br>')+'</div>';
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+function addUserMsg(text){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');div.className='msg msg-user';
+  div.innerHTML='<div class="bubble">'+text+'</div>';
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+function showTyping(){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');div.className='msg msg-ai';div.id='typing-ind';
+  div.innerHTML='<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+function hideTyping(){const t=document.getElementById('typing-ind');if(t)t.remove();}
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();if(!text)return;
+  input.value='';input.style.height='auto';
+  addUserMsg(text);
+  if(!D.chatHistory)D.chatHistory=[];
+  D.chatHistory.push({role:'user',content:text});
+  if(D.chatHistory.length>20)D.chatHistory=D.chatHistory.slice(-20);
+  save(D);
+  document.getElementById('sendBtn').disabled=true;
+  showTyping();
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildSystem(),messages:D.chatHistory})
+    });
+    const data=await resp.json();
+    hideTyping();
+    const reply=data.content?.map(c=>c.text||'').join('')||"Sorry, couldn't respond. Try again.";
+    D.chatHistory.push({role:'assistant',content:reply});
+    save(D);addAiMsg(reply);
+  }catch(e){hideTyping();addAiMsg("Network issue — check your connection and try again.");}
+  document.getElementById('sendBtn').disabled=false;
+}
+function sendQuick(text){document.getElementById('chatInput').value=text;sendMsg();}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+document.getElementById('chatInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+render();
+</script>
+</body>
+</html>
